@@ -9,6 +9,8 @@ class HappyPiggy:
             "happy": "57"
         }
 
+
+
         self.appearances = {
             "normal": list(),
             "happy": list(),
