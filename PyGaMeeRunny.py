@@ -10,7 +10,7 @@ class PyGaMeeRunny:
         self.happy_piggy = HappyPiggy()
         self.state_txt_match = {
             "normal": [i+1 for i in range(31)],
-            "happy": []
+            "happy": [5, 7]
         }
 
         self.val_chinglish_match = {
@@ -39,7 +39,6 @@ class PyGaMeeRunny:
         self.run = True
 
     def __set_appearances(self, state):
-        print(state)
         for i in self.state_txt_match.get(state):
             img = cv2.imread(f'pig/pigpic/{i}.png')
             h, w, g = img.shape
@@ -47,11 +46,11 @@ class PyGaMeeRunny:
             self.appearances[state].append(frame)
 
     def __show_piggy(self, state):
-        pig = self.appearances.get(state)[int(2 * time.time()) % len(self.appearances.get(state))]
-        self.sceen.fill([255, 255, 255])
+        pig = self.appearances.get(state)[int(3 * time.time()) % len(self.appearances.get(state))]
+        self.screen.fill([255, 255, 255])
         for i in range(len(pig)):
             for j in range(len(pig[i])):
-                self.sceen.set_at((2 * j + x - len(pig[i]), 2 * i + y - len(pig)), pig[i][j])
+                self.screen.set_at((2 * j + self.pos[0] - len(pig[i]), 2 * i + self.pos[1] - len(pig)), pig[i][j])
         pygame.display.update()
         return
 
