@@ -12,8 +12,6 @@ class HappyPiggy:
     def time_change_val(self):
         self.food_val -= 1
         self.energy_val -= 2
-        if self.food_val<100:
-            print(123)
 
     def eat_change_val(self,food_type=1):
         self.food_val += 10
