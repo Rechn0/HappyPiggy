@@ -1,12 +1,22 @@
 import pygame
 import time
 
+from HappyPiggy import HappyPiggy
 
-class HappyPiggy:
+
+class PyGaMeeRunny:
     def __init__(self):
+        self.happy_piggy = HappyPiggy()
         self.state_txt_match = {
             "normal": "123456",
             "happy": "57"
+        }
+
+        self.val_chinglish_match = {
+            "名字": 'name',
+            "生日": 'birth_time',
+            "饥饿值": 'food_val',
+            "活力值": 'energy_val'
         }
 
         self.appearances = {
@@ -17,25 +27,14 @@ class HappyPiggy:
         for state in self.state_txt_match:
             self.__set_appearances(state)
 
-        self.screen = pygame.display.set_mode([500, 500])
+        self.screen = pygame.display.set_mode([1000, 500])
         self.screen.fill([255, 255, 255])
         self.pos = (0, 0)
 
-        self.food_val = 100
-        self.energy_val = 100
-
-        self.birth_time = time.time()
-        self.age = 0
-        self.happy_start_time = 0
         self.now = time.time()
 
         self.clock = pygame.time.Clock()
 
-        self.val_info = {
-            "年龄": [pygame.font.SysFont("SimHei", 36), self.age],
-            "饥饿值": [pygame.font.SysFont("SimHei", 36), self.food_val],
-            "活力值": [pygame.font.SysFont("SimHei", 36), self.energy_val]
-        }
         self.run = True
 
     def __set_appearances(self, state):
@@ -56,9 +55,9 @@ class HappyPiggy:
                 self.screen.set_at((2 * j + self.pos[0] - len(pig[i]), 4 * i + self.pos[1] - len(pig)), (0, 0, 0))
 
     def __show_val_info(self, type, val_x, val_y):
-        show_info = f'{type}:{self.val_info.get(type)[1]}'
-        food_info_text = self.val_info.get(type)[0].render(show_info, True, (0, 0, 0))
-        self.screen.blit(food_info_text, (val_x, val_y))
+        show_info = f'{type}:{self.happy_piggy.__getattribute__(self.val_chinglish_match.get(type))}'
+        info_text = pygame.font.SysFont("SimHei", 20).render(show_info, True, (0, 0, 0))
+        self.screen.blit(info_text, (val_x, val_y))
 
     def __eat(self, food_kind):
         pass
@@ -88,13 +87,12 @@ class HappyPiggy:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == ord('a') or event.key == ord('b'):
                         happy_start_time = time.time()
-                        self.val_info.get('饥饿值')[1] += 10
-                        self.val_info.get('活力值')[1] += 5
+                        self.happy_piggy.eat_change_val()
+                        self.happy_piggy.sleep_change_val()
 
             self.now = time.time()
             if int(self.now - last_1_min) > 6:
-                self.val_info.get('饥饿值')[1] -= 1
-                self.val_info.get('活力值')[1] -= 2
+                self.happy_piggy.time_change_val()
                 last_1_min = self.now
 
             if int(self.now - happy_start_time) < 5:
@@ -103,14 +101,9 @@ class HappyPiggy:
                 self.__show_piggy("normal")
 
             val_x, val_y = 0, 0
-            for k in self.val_info:
+            for k in self.val_chinglish_match:
                 self.__show_val_info(k, val_x, val_y)
                 val_y += 50
 
             pygame.display.flip()
             self.clock.tick(20)
-
-
-pygame.init()
-HappyPiggy().running()
-pygame.quit()
