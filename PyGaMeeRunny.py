@@ -1,17 +1,13 @@
 import pygame
 import time
-import cv2
 
 from HappyPiggy import HappyPiggy
 
 
 class PyGaMeeRunny:
-    def __init__(self):
+    def __init__(self, user):
+        self.user = user
         self.happy_piggy = HappyPiggy()
-        self.state_txt_match = {
-            "normal": [i+1 for i in range(31)],
-            "happy": [5, 7]
-        }
 
         self.val_chinglish_match = {
             "名字": 'name',
@@ -20,15 +16,10 @@ class PyGaMeeRunny:
             "活力值": 'energy_val'
         }
 
-        self.appearances = {
-            "normal": list(),
-            "happy": list(),
-            "angry": list()
-        }
-        for state in self.state_txt_match:
-            self.__set_appearances(state)
+        self.screen_width = 1000
+        self.screen_height = 500
 
-        self.screen = pygame.display.set_mode([1000, 500])
+        self.screen = pygame.display.set_mode([self.screen_width, self.screen_height])
         self.screen.fill([255, 255, 255])
         self.pos = (0, 0)
 
@@ -38,15 +29,9 @@ class PyGaMeeRunny:
 
         self.run = True
 
-    def __set_appearances(self, state):
-        for i in self.state_txt_match.get(state):
-            img = cv2.imread(f'pig/pigpic/{i}.png')
-            h, w, g = img.shape
-            frame = [[(img[x][y][0], img[x][y][1], img[x][y][2]) for y in range(w)] for x in range(h)]
-            self.appearances[state].append(frame)
-
     def __show_piggy(self, state):
-        pig = self.appearances.get(state)[int(3 * time.time()) % len(self.appearances.get(state))]
+        pig = self.happy_piggy.appearances.get(state)[
+            int(3 * time.time()) % len(self.happy_piggy.appearances.get(state))]
         self.screen.fill([255, 255, 255])
         for i in range(len(pig)):
             for j in range(len(pig[i])):
@@ -58,6 +43,11 @@ class PyGaMeeRunny:
         show_info = f'{type}:{self.happy_piggy.__getattribute__(self.val_chinglish_match.get(type))}'
         info_text = pygame.font.SysFont("SimHei", 20).render(show_info, True, (0, 0, 0))
         self.screen.blit(info_text, (val_x, val_y))
+
+    def __show_basic_info(self):
+        show_info = f'{self.user}，你来看我啦!'
+        info_text = pygame.font.SysFont("SimHei", 30).render(show_info, True, (0, 128, 128))
+        self.screen.blit(info_text, (self.screen_width / 2, 0))
 
     def __eat(self, food_kind):
         pass
@@ -73,8 +63,7 @@ class PyGaMeeRunny:
         self.__angry()
 
     def running(self):
-        global happy_start_time
-        global last_1_min
+        global happy_start_time, msg, last_1_min
         happy_start_time = 0
         last_1_min = time.time()
         while self.run:
@@ -90,20 +79,22 @@ class PyGaMeeRunny:
                         self.happy_piggy.eat_change_val()
                         self.happy_piggy.sleep_change_val()
 
-            self.now = time.time()
-            if int(self.now - last_1_min) > 6:
-                self.happy_piggy.time_change_val()
-                last_1_min = self.now
+                self.now = time.time()
+                if int(self.now - last_1_min) > 6:
+                    self.happy_piggy.time_change_val()
+                    last_1_min = self.now
 
-            if int(self.now - happy_start_time) < 5:
-                self.__show_piggy("happy")
-            else:
-                self.__show_piggy("normal")
+                if int(self.now - happy_start_time) < 5:
+                    self.__show_piggy("happy")
+                else:
+                    self.__show_piggy("normal")
 
-            val_x, val_y = 0, 0
-            for k in self.val_chinglish_match:
-                self.__show_val_info(k, val_x, val_y)
-                val_y += 50
+                val_x, val_y = 0, 0
+                for k in self.val_chinglish_match:
+                    self.__show_val_info(k, val_x, val_y)
+                    val_y += 50
 
-            pygame.display.flip()
-            self.clock.tick(20)
+                self.__show_basic_info()
+
+                pygame.display.flip()
+                self.clock.tick(20)

@@ -1,5 +1,7 @@
 import time
 
+import cv2
+
 
 class HappyPiggy:
     def __init__(self):
@@ -8,6 +10,25 @@ class HappyPiggy:
         self.energy_val = 100
         self.state = 'normal'
         self.birth_time = time.strftime('%Y-%m-%d %H:%M:%S')
+
+        self.state_frame_match = {
+            "normal": [i + 1 for i in range(31)],
+            "happy": [5, 7]
+        }
+        self.appearances = {
+            "normal": list(),
+            "happy": list(),
+            "angry": list()
+        }
+        for state in self.state_frame_match:
+            self.__set_appearances(state)
+
+    def __set_appearances(self, state):
+        for i in self.state_frame_match.get(state):
+            img = cv2.imread(f'pig/pigpic/{i}.png')
+            h, w, g = img.shape
+            frame = [[(img[x][y][0], img[x][y][1], img[x][y][2]) for y in range(w)] for x in range(h)]
+            self.appearances[state].append(frame)
 
     def time_change_val(self):
         self.food_val -= 1
