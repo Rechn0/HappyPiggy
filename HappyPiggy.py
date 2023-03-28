@@ -13,7 +13,7 @@ class HappyPiggy:
 
         self.state_frame_match = {
             "normal": [i + 1 for i in range(31)],
-            "happy": [5, 7],
+            "happy": [7, 8, 23, 24, 25, 8],
             "angry": [i for i in range(32, 54)]
         }
         self.appearances = {

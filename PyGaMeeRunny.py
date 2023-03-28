@@ -32,7 +32,7 @@ class PyGaMeeRunny:
 
     def __show_piggy(self, state):
         pig = self.happy_piggy.appearances.get(state)[
-            int(3 * time.time()) % len(self.happy_piggy.appearances.get(state))]
+            int(6 * time.time()) % len(self.happy_piggy.appearances.get(state))]
         self.screen.fill([255, 255, 255])
         for i in range(len(pig)):
             for j in range(len(pig[i])):
@@ -88,24 +88,24 @@ class PyGaMeeRunny:
                     elif event.key == ord('2'):
                         angry_start_time = time.time()
 
-                self.now = time.time()
-                if int(self.now - last_1_min) > 6:
-                    self.happy_piggy.time_change_val()
-                    last_1_min = self.now
+            self.now = time.time()
+            if int(self.now - last_1_min) > 6:
+                self.happy_piggy.time_change_val()
+                last_1_min = self.now
 
-                if int(self.now - happy_start_time) < 5:
-                    self.__show_piggy("happy")
-                elif int(self.now - angry_start_time) < 5:
-                    self.__show_piggy("angry")
-                else:
-                    self.__show_piggy("normal")
+            if int(self.now - happy_start_time) < 5:
+                self.__show_piggy("happy")
+            elif int(self.now - angry_start_time) < 5:
+                self.__show_piggy("angry")
+            else:
+                self.__show_piggy("normal")
 
-                val_x, val_y = 0, 0
-                for k in self.val_chinglish_match:
-                    self.__show_val_info(k, val_x, val_y)
-                    val_y += 50
+            val_x, val_y = 0, 0
+            for k in self.val_chinglish_match:
+                self.__show_val_info(k, val_x, val_y)
+                val_y += 50
 
-                self.__show_basic_info()
+            self.__show_basic_info()
 
-                pygame.display.flip()
-                self.clock.tick(20)
+            pygame.display.flip()
+            self.clock.tick(20)
