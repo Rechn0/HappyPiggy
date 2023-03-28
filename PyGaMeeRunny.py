@@ -10,7 +10,8 @@ class PyGaMeeRunny:
         self.happy_piggy = HappyPiggy()
         self.state_txt_match = {
             "normal": [i+1 for i in range(31)],
-            "happy": [5, 7]
+            "happy": [8, 23, 24, 25],
+            "angry": [i+1 for i in range(31, 53)],
         }
 
         self.val_chinglish_match = {
@@ -46,7 +47,7 @@ class PyGaMeeRunny:
             self.appearances[state].append(frame)
 
     def __show_piggy(self, state):
-        pig = self.appearances.get(state)[int(3 * time.time()) % len(self.appearances.get(state))]
+        pig = self.appearances.get(state)[int(4 * time.time()) % len(self.appearances.get(state))]
         self.screen.fill([255, 255, 255])
         for i in range(len(pig)):
             for j in range(len(pig[i])):
@@ -74,8 +75,10 @@ class PyGaMeeRunny:
 
     def running(self):
         global happy_start_time
+        global angry_start_time
         global last_1_min
         happy_start_time = 0
+        angry_start_time = 0
         last_1_min = time.time()
         while self.run:
             # 处理事件
@@ -89,6 +92,11 @@ class PyGaMeeRunny:
                         happy_start_time = time.time()
                         self.happy_piggy.eat_change_val()
                         self.happy_piggy.sleep_change_val()
+                    elif event.key == ord('1'):
+                        happy_start_time = time.time()
+                    elif event.key == ord('2'):
+                        angry_start_time = time.time()
+
 
             self.now = time.time()
             if int(self.now - last_1_min) > 6:
@@ -97,6 +105,8 @@ class PyGaMeeRunny:
 
             if int(self.now - happy_start_time) < 5:
                 self.__show_piggy("happy")
+            elif int(self.now - angry_start_time) < 5:
+                self.__show_piggy("angry")
             else:
                 self.__show_piggy("normal")
 
