@@ -9,10 +9,6 @@ class PyGaMeeRunny:
     def __init__(self, user):
         self.user = user
         self.happy_piggy = HappyPiggy()
-        self.state_txt_match = {
-            "normal": [i+1 for i in range(31)],
-            "happy": [5, 7]
-        }
 
         self.val_chinglish_match = {
             "名字": 'name',
@@ -91,7 +87,6 @@ class PyGaMeeRunny:
                         happy_start_time = time.time()
                     elif event.key == ord('2'):
                         angry_start_time = time.time()
-
 
                 self.now = time.time()
                 if int(self.now - last_1_min) > 6:

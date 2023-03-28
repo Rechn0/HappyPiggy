@@ -13,7 +13,8 @@ class HappyPiggy:
 
         self.state_frame_match = {
             "normal": [i + 1 for i in range(31)],
-            "happy": [5, 7]
+            "happy": [5, 7],
+            "angry": [i for i in range(32, 54)]
         }
         self.appearances = {
             "normal": list(),
@@ -34,7 +35,7 @@ class HappyPiggy:
         self.food_val -= 1
         self.energy_val -= 2
 
-    def eat_change_val(self,food_type=1):
+    def eat_change_val(self, food_type=1):
         self.food_val += 10
 
     def sleep_change_val(self, sleep_time=1):
