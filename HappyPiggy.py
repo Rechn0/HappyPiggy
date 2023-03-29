@@ -26,7 +26,7 @@ class HappyPiggy:
 
     def __set_appearances(self, state):
         for i in self.state_frame_match.get(state):
-            img = cv2.imread(f'pig/pigpic/{i}.png')
+            img = cv2.imread(f'Views/pigpic/{i}.png')
             h, w, g = img.shape
             frame = [[(img[x][y][0], img[x][y][1], img[x][y][2]) for y in range(w)] for x in range(h)]
             self.appearances[state].append(frame)
