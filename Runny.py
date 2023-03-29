@@ -43,10 +43,10 @@ class Runny:
                         pygame.init()
                         PyGaMeeRunny(values["-user-"]).running()
                         pygame.quit()
-                    else:
-                        msg = "我不认识你！"
-                        Fs.Popup(msg)
-                    break
+                        break
+                else:
+                    msg = "我不认识你！"
+                    Fs.Popup(msg)
             if event is None:
                 break
         window.close()

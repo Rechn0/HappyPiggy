@@ -3,6 +3,7 @@ import time
 import cv2
 
 from HappyPiggy import HappyPiggy
+from Sounds import Sounds, sounds
 
 
 class PyGaMeeRunny:
@@ -46,7 +47,7 @@ class PyGaMeeRunny:
         self.screen.blit(info_text, (val_x, val_y))
 
     def __show_basic_info(self):
-        show_info = f'{self.user}，你来看我啦!'
+        show_info = f'{self.user}，你来看我啦! 扣1听我唱歌'
         info_text = pygame.font.SysFont("SimHei", 30).render(show_info, True, (0, 128, 128))
         self.screen.blit(info_text, (self.screen_width / 2, 0))
 
@@ -83,8 +84,10 @@ class PyGaMeeRunny:
                         happy_start_time = time.time()
                         self.happy_piggy.eat_change_val()
                         self.happy_piggy.sleep_change_val()
+                        sounds.yohu.play()
                     elif event.key == ord('1'):
                         happy_start_time = time.time()
+                        sounds.lalala.play()
                     elif event.key == ord('2'):
                         angry_start_time = time.time()
 
