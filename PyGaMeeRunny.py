@@ -41,6 +41,13 @@ class PyGaMeeRunny:
         pygame.display.update()
         return
 
+    def __show_dialog(self, state, message=None):
+        pig = self.happy_piggy.appearances.get(state)[
+            int(6 * time.time()) % len(self.happy_piggy.appearances.get(state))]
+        dialog_text = pygame.font.SysFont("SimHei", 20).render(message, True, (0, 0, 0))
+        self.screen.blit(dialog_text, (self.pos[0] + len(pig[0]), self.pos[1] - len(pig)))
+        return
+
     def __show_val_info(self, type, val_x, val_y):
         show_info = f'{type}:{self.happy_piggy.__getattribute__(self.val_chinglish_match.get(type))}'
         info_text = pygame.font.SysFont("SimHei", 20).render(show_info, True, (0, 0, 0))
@@ -96,12 +103,20 @@ class PyGaMeeRunny:
                 self.happy_piggy.time_change_val()
                 last_1_min = self.now
 
+            state = ""
+            message = ""
             if int(self.now - happy_start_time) < 5:
-                self.__show_piggy("happy")
+                state = "happy"
+                message = "la~lala!"
             elif int(self.now - angry_start_time) < 5:
-                self.__show_piggy("angry")
+                state = "angry"
+                message = "rua! rua rua!"
             else:
-                self.__show_piggy("normal")
+                state = "normal"
+                message = "hello~"
+
+            self.__show_piggy(state)
+            self.__show_dialog(state, message)
 
             val_x, val_y = 0, 0
             for k in self.val_chinglish_match:
