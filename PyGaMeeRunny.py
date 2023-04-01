@@ -3,6 +3,7 @@ import time
 import cv2
 import random
 
+from Food import Apple
 from HappyPiggy import HappyPiggy
 from Sounds import Sounds, sounds
 
@@ -12,11 +13,17 @@ class PyGaMeeRunny:
         self.user = user
         self.happy_piggy = HappyPiggy()
 
+        self.apple = Apple()
+
         self.val_chinglish_match = {
             "名字": 'name',
             "生日": 'birth_time',
             "饥饿值": 'food_val',
             "活力值": 'energy_val'
+        }
+
+        self.food_chinglish_match ={
+            "苹果": 'apple'
         }
 
         self.screen_width = 1000
@@ -52,8 +59,17 @@ class PyGaMeeRunny:
         self.screen.blit(dialog_text, (self.pos[0] + len(pig[0]), self.pos[1] - len(pig)))
         return
 
-    def __show_val_info(self, type, val_x, val_y):
-        show_info = f'{type}:{self.happy_piggy.__getattribute__(self.val_chinglish_match.get(type))}'
+    def __show_food(self, food_type):
+        food = self.__getattribute__(self.food_chinglish_match.get(food_type)).appearance
+        self.screen.fill([255, 255, 255])
+        for i in range(len(food)):
+            for j in range(len(food[i])):
+                self.screen.set_at((2 * j + self.pos[0] - len(food[i]), 2 * i + self.pos[1] - len(food)), food[i][j])
+        pygame.display.update()
+        return
+
+    def __show_val_info(self, val_type, val_x, val_y):
+        show_info = f'{type}:{self.happy_piggy.__getattribute__(self.val_chinglish_match.get(val_type))}'
         info_text = pygame.font.SysFont("SimHei", 20).render(show_info, True, (0, 0, 0))
         self.screen.blit(info_text, (val_x, val_y))
 
@@ -100,6 +116,7 @@ class PyGaMeeRunny:
                         self.happy_piggy.eat_change_val()
                         self.happy_piggy.sleep_change_val()
                         sounds.yohu.play()
+                        self.__show_food('苹果')
                     elif event.key == ord('1'):
                         happy_start_time = time.time()
                         sounds.lalala.play()
