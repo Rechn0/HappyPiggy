@@ -36,7 +36,7 @@ class Runny:
             event, values = window.read()
             if event == "告诉小猪":
                 for user in self.UserList:
-                    if values["-user-"] == user["账号"] and values["-pwd-"] == user["密码"]:
+                    if values["-user-"].upper() == user["账号"] and values["-pwd-"].upper() == user["密码"]:
                         msg = "原来是爸爸妈妈^*^"
                         Fs.Popup(msg)
                         window.close()

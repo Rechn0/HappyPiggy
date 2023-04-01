@@ -1,6 +1,7 @@
 import pygame
 import time
 import cv2
+import random
 
 from HappyPiggy import HappyPiggy
 from Sounds import Sounds, sounds
@@ -34,10 +35,13 @@ class PyGaMeeRunny:
     def __show_piggy(self, state):
         pig = self.happy_piggy.appearances.get(state)[
             int(6 * time.time()) % len(self.happy_piggy.appearances.get(state))]
+
+        di, dj = (random.randint(-4, 4), random.randint(-4, 4)) if state == "shy" else (0, 0)
+
         self.screen.fill([255, 255, 255])
         for i in range(len(pig)):
             for j in range(len(pig[i])):
-                self.screen.set_at((2 * j + self.pos[0] - len(pig[i]), 2 * i + self.pos[1] - len(pig)), pig[i][j])
+                self.screen.set_at((2 * j + self.pos[0] - len(pig[i]) + dj, 2 * i + self.pos[1] - len(pig) + di), pig[i][j])
         pygame.display.update()
         return
 
@@ -78,6 +82,7 @@ class PyGaMeeRunny:
         global last_1_min
         happy_start_time = 0
         angry_start_time = 0
+        shy_start_time = 0
         last_1_min = time.time()
         while self.run:
             # 处理事件
@@ -86,6 +91,9 @@ class PyGaMeeRunny:
                     self.run = False
                 elif event.type == pygame.MOUSEMOTION:
                     self.pos = event.pos
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    shy_start_time = time.time()
+                    sounds.yohu.play()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == ord('a') or event.key == ord('b'):
                         happy_start_time = time.time()
@@ -105,7 +113,10 @@ class PyGaMeeRunny:
 
             state = ""
             message = ""
-            if int(self.now - happy_start_time) < 5:
+            if int(self.now - shy_start_time) < 2:
+                state = "shy"
+                message = "QAQ"
+            elif int(self.now - happy_start_time) < 5:
                 state = "happy"
                 message = "la~lala!"
             elif int(self.now - angry_start_time) < 5:
