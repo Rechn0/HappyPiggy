@@ -41,6 +41,9 @@ class Runny:
                         Fs.Popup(msg)
                         window.close()
                         pygame.init()
+                        pygame.display.set_caption("HappyPiggy~")
+                        icon = pygame.image.load("Views/pigicon.png")
+                        pygame.display.set_icon(icon)
                         PyGaMeeRunny(values["-user-"]).running()
                         pygame.quit()
                         break

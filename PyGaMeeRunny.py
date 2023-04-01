@@ -44,15 +44,15 @@ class PyGaMeeRunny:
             int(6 * time.time()) % len(self.happy_piggy.appearances.get(state))]
 
         di, dj = (random.randint(-4, 4), random.randint(-4, 4)) if state == "shy" else (0, 0)
-
-        self.screen.fill([255, 255, 255])
         for i in range(len(pig)):
             for j in range(len(pig[i])):
                 self.screen.set_at((2 * j + self.pos[0] - len(pig[i]) + dj, 2 * i + self.pos[1] - len(pig) + di), pig[i][j])
         pygame.display.update()
         return
 
-    def __show_dialog(self, state, message=None):
+    def __show_dialog(self, state, message=""):
+        if message == "":
+            return
         pig = self.happy_piggy.appearances.get(state)[
             int(6 * time.time()) % len(self.happy_piggy.appearances.get(state))]
         dialog_text = pygame.font.SysFont("SimHei", 20).render(message, True, (0, 0, 0))
@@ -61,15 +61,15 @@ class PyGaMeeRunny:
 
     def __show_food(self, food_type):
         food = self.__getattribute__(self.food_chinglish_match.get(food_type)).appearance
-        self.screen.fill([255, 255, 255])
         for i in range(len(food)):
             for j in range(len(food[i])):
-                self.screen.set_at((2 * j + self.pos[0] - len(food[i]), 2 * i + self.pos[1] - len(food)), food[i][j])
+                # self.screen.set_at((2 * j + self.pos[0] - len(food[i]), 2 * i + self.pos[1] - len(food)), food[i][j])
+                self.screen.set_at((j, i), food[i][j])
         pygame.display.update()
         return
 
     def __show_val_info(self, val_type, val_x, val_y):
-        show_info = f'{type}:{self.happy_piggy.__getattribute__(self.val_chinglish_match.get(val_type))}'
+        show_info = f'{val_type}:{self.happy_piggy.__getattribute__(self.val_chinglish_match.get(val_type))}'
         info_text = pygame.font.SysFont("SimHei", 20).render(show_info, True, (0, 0, 0))
         self.screen.blit(info_text, (val_x, val_y))
 
@@ -111,12 +111,11 @@ class PyGaMeeRunny:
                     shy_start_time = time.time()
                     sounds.yohu.play()
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == ord('a') or event.key == ord('b'):
+                    if event.key == ord('3') or event.key == ord('4'):
                         happy_start_time = time.time()
-                        self.happy_piggy.eat_change_val()
+                        self.happy_piggy.eat_change_val(self.apple.food_val)
                         self.happy_piggy.sleep_change_val()
                         sounds.yohu.play()
-                        self.__show_food('苹果')
                     elif event.key == ord('1'):
                         happy_start_time = time.time()
                         sounds.lalala.play()
@@ -128,6 +127,8 @@ class PyGaMeeRunny:
                 self.happy_piggy.time_change_val()
                 last_1_min = self.now
 
+            self.screen.fill([255, 255, 255])
+
             state = ""
             message = ""
             if int(self.now - shy_start_time) < 2:
@@ -136,12 +137,12 @@ class PyGaMeeRunny:
             elif int(self.now - happy_start_time) < 5:
                 state = "happy"
                 message = "la~lala!"
+                self.__show_food('苹果')
             elif int(self.now - angry_start_time) < 5:
                 state = "angry"
                 message = "rua! rua rua!"
             else:
                 state = "normal"
-                message = "hello~"
 
             self.__show_piggy(state)
             self.__show_dialog(state, message)

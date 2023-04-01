@@ -37,8 +37,8 @@ class HappyPiggy:
         self.food_val -= 1
         self.energy_val -= 2
 
-    def eat_change_val(self, food_type=1):
-        self.food_val += 10
+    def eat_change_val(self, val):
+        self.food_val += val
 
     def sleep_change_val(self, sleep_time=1):
         self.energy_val += 20
