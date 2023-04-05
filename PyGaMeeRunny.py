@@ -50,7 +50,6 @@ class PyGaMeeRunny:
                 self.screen.set_at(
                     (2 * j + self.pig_pos[0] - len(pig[i]) + dj, 2 * i + self.pig_pos[1] - len(pig) + di),
                     pig[i][j])
-        pygame.display.update()
         return
 
     def __show_dialog(self, state, message=""):
@@ -124,7 +123,7 @@ class PyGaMeeRunny:
                             self.happy_piggy.sleep_change_val()
                         during_feed = False
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == ord('a'):
+                    if event.key == ord('a') or event.key == ord('3'):
                         start_feed = True
                         move_pig = False
                         happy_start_time = time.time()
@@ -165,6 +164,8 @@ class PyGaMeeRunny:
 
             if start_feed or during_feed:
                 self.__show_food(food_type="苹果", core=self.food_pos, angle=self.food_angle)
+            else:
+                move_pig = True
             self.__show_piggy(state)
             self.__show_dialog(state, message)
 
@@ -175,5 +176,6 @@ class PyGaMeeRunny:
 
             self.__show_basic_info()
 
-            pygame.display.flip()
+            # pygame.display.flip()
+            pygame.display.update()
             self.clock.tick(20)
