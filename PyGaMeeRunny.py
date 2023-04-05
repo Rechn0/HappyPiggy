@@ -5,7 +5,7 @@ import random
 
 from Food import Apple
 from HappyPiggy import HappyPiggy
-from Sounds import Sounds, sounds
+from Sounds import sounds
 
 
 class PyGaMeeRunny:
@@ -91,7 +91,7 @@ class PyGaMeeRunny:
         self.__angry()
 
     def running(self):
-        global happy_start_time,msg, last_1_min, start_feed, during_feed, move_pig
+        global happy_start_time, msg, last_1_min, start_feed, during_feed, move_pig
         happy_start_time = 0
         angry_start_time = 0
         shy_start_time = 0
@@ -106,7 +106,7 @@ class PyGaMeeRunny:
                     self.run = False
                 elif event.type == pygame.MOUSEMOTION:
                     if during_feed:
-                        #鼠标移动关联食物
+                        # 鼠标移动关联食物
                         self.food_pos = event.pos
                     elif move_pig:
                         # 鼠标移动关联猪
@@ -118,14 +118,16 @@ class PyGaMeeRunny:
                     else:
                         shy_start_time = time.time()
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    during_feed = False
+                    if during_feed:
+                        if abs(self.pig_pos[0] - self.food_pos[0]) < 30 or abs(self.pig_pos[1] - self.food_pos[1]) < 30:
+                            self.happy_piggy.eat_change_val(self.apple.food_val)
+                            self.happy_piggy.sleep_change_val()
+                        during_feed = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == ord('a'):
                         start_feed = True
                         move_pig = False
                         happy_start_time = time.time()
-                        self.happy_piggy.eat_change_val(self.apple.food_val)
-                        self.happy_piggy.sleep_change_val()
                         sounds.yohu.play()
                     elif event.key == ord('1'):
                         happy_start_time = time.time()
@@ -153,7 +155,7 @@ class PyGaMeeRunny:
                 message = "QAQ"
             elif int(self.now - happy_start_time) < 5:
                 state = "happy"
-                message = "请拖动食物喂给我吧"
+                message = "请在5秒钟内拖动食物喂给我吧"
             elif int(self.now - angry_start_time) < 5:
                 state = "angry"
                 message = "rua! rua rua!"
