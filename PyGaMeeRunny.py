@@ -12,7 +12,6 @@ class PyGaMeeRunny:
     def __init__(self, user):
         self.user = user
         self.happy_piggy = HappyPiggy()
-
         self.apple = Apple()
 
         self.val_chinglish_match = {
@@ -31,9 +30,8 @@ class PyGaMeeRunny:
 
         self.screen = pygame.display.set_mode([self.screen_width, self.screen_height])
         self.screen.fill([255, 255, 255])
-        self.pos = (0, 0)
-        self.food_pos_x = self.screen_width / 2
-        self.foos_pos_y = self.screen_height / 2
+        self.pig_pos = (0, 0)
+        self.food_pos = (self.screen_width - 50, 50)
         self.food_angle = 60
 
         self.now = time.time()
@@ -49,8 +47,9 @@ class PyGaMeeRunny:
         di, dj = (random.randint(-4, 4), random.randint(-4, 4)) if state == "shy" else (0, 0)
         for i in range(len(pig)):
             for j in range(len(pig[i])):
-                self.screen.set_at((2 * j + self.pos[0] - len(pig[i]) + dj, 2 * i + self.pos[1] - len(pig) + di),
-                                   pig[i][j])
+                self.screen.set_at(
+                    (2 * j + self.pig_pos[0] - len(pig[i]) + dj, 2 * i + self.pig_pos[1] - len(pig) + di),
+                    pig[i][j])
         pygame.display.update()
         return
 
@@ -60,12 +59,12 @@ class PyGaMeeRunny:
         pig = self.happy_piggy.appearances.get(state)[
             int(6 * time.time()) % len(self.happy_piggy.appearances.get(state))]
         dialog_text = pygame.font.SysFont("SimHei", 20).render(message, True, (0, 0, 0))
-        self.screen.blit(dialog_text, (self.pos[0] + len(pig[0]), self.pos[1] - len(pig)))
+        self.screen.blit(dialog_text, (self.pig_pos[0] + len(pig[0]), self.pig_pos[1] - len(pig)))
         return
 
     def __show_food(self, food_type, core: tuple, angle):
-        food = self.__getattribute__(self.food_chinglish_match.get(food_type)).appearance
-        image = pygame.transform.rotate(food, angle)
+        food_img = self.__getattribute__(self.food_chinglish_match.get(food_type)).appearance
+        image = pygame.transform.rotate(food_img, angle)
         self.screen.blit(image, image.get_rect(center=tuple(core)))
 
     def __show_val_info(self, val_type, val_x, val_y):
@@ -92,31 +91,41 @@ class PyGaMeeRunny:
         self.__angry()
 
     def running(self):
-        global happy_start_time, msg, last_1_min
-        global happy_start_time
-        global angry_start_time
-        global last_1_min
+        global happy_start_time,msg, last_1_min, start_feed, during_feed, move_pig
         happy_start_time = 0
         angry_start_time = 0
         shy_start_time = 0
         last_1_min = time.time()
+        start_feed = False
+        during_feed = False
+        move_pig = True
         while self.run:
             # 处理事件
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.run = False
                 elif event.type == pygame.MOUSEMOTION:
-                    self.pos = event.pos
+                    if during_feed:
+                        #鼠标移动关联食物
+                        self.food_pos = event.pos
+                    elif move_pig:
+                        # 鼠标移动关联猪
+                        self.pig_pos = event.pos
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    shy_start_time = time.time()
-                    sounds.yohu.play()
+                    if start_feed:
+                        self.food_pos = event.pos
+                        during_feed = True
+                    else:
+                        shy_start_time = time.time()
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    during_feed = False
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == ord('3') or event.key == ord('4'):
+                    if event.key == ord('a'):
+                        start_feed = True
+                        move_pig = False
                         happy_start_time = time.time()
                         self.happy_piggy.eat_change_val(self.apple.food_val)
                         self.happy_piggy.sleep_change_val()
-                        self.food_pos_x += 10
-                        self.food_angle += 10
                         sounds.yohu.play()
                     elif event.key == ord('1'):
                         happy_start_time = time.time()
@@ -129,6 +138,12 @@ class PyGaMeeRunny:
                 self.happy_piggy.time_change_val()
                 last_1_min = self.now
 
+            if int(self.now - last_1_min) > 0.2:
+                if self.food_angle <= 350:
+                    self.food_angle += 10
+                else:
+                    self.food_angle = 0
+
             self.screen.fill([255, 255, 255])
 
             state = ""
@@ -138,15 +153,16 @@ class PyGaMeeRunny:
                 message = "QAQ"
             elif int(self.now - happy_start_time) < 5:
                 state = "happy"
-                message = "la~lala!"
+                message = "请拖动食物喂给我吧"
             elif int(self.now - angry_start_time) < 5:
                 state = "angry"
                 message = "rua! rua rua!"
             else:
+                start_feed = False
                 state = "normal"
 
-            self.__show_food(food_type="苹果", core=(self.food_pos_x, self.foos_pos_y), angle=self.food_angle)
-
+            if start_feed or during_feed:
+                self.__show_food(food_type="苹果", core=self.food_pos, angle=self.food_angle)
             self.__show_piggy(state)
             self.__show_dialog(state, message)
 
