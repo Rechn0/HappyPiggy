@@ -22,7 +22,7 @@ class PyGaMeeRunny:
             "活力值": 'energy_val'
         }
 
-        self.food_chinglish_match ={
+        self.food_chinglish_match = {
             "苹果": 'apple'
         }
 
@@ -32,11 +32,14 @@ class PyGaMeeRunny:
         self.screen = pygame.display.set_mode([self.screen_width, self.screen_height])
         self.screen.fill([255, 255, 255])
         self.pos = (0, 0)
+        self.food_pos_x = self.screen_width / 2
+        self.foos_pos_y = self.screen_height / 2
+        self.food_angle = 60
 
         self.now = time.time()
 
         self.clock = pygame.time.Clock()
-
+        # self.allow_move = True
         self.run = True
 
     def __show_piggy(self, state):
@@ -46,7 +49,8 @@ class PyGaMeeRunny:
         di, dj = (random.randint(-4, 4), random.randint(-4, 4)) if state == "shy" else (0, 0)
         for i in range(len(pig)):
             for j in range(len(pig[i])):
-                self.screen.set_at((2 * j + self.pos[0] - len(pig[i]) + dj, 2 * i + self.pos[1] - len(pig) + di), pig[i][j])
+                self.screen.set_at((2 * j + self.pos[0] - len(pig[i]) + dj, 2 * i + self.pos[1] - len(pig) + di),
+                                   pig[i][j])
         pygame.display.update()
         return
 
@@ -59,14 +63,10 @@ class PyGaMeeRunny:
         self.screen.blit(dialog_text, (self.pos[0] + len(pig[0]), self.pos[1] - len(pig)))
         return
 
-    def __show_food(self, food_type):
+    def __show_food(self, food_type, core: tuple, angle):
         food = self.__getattribute__(self.food_chinglish_match.get(food_type)).appearance
-        for i in range(len(food)):
-            for j in range(len(food[i])):
-                # self.screen.set_at((2 * j + self.pos[0] - len(food[i]), 2 * i + self.pos[1] - len(food)), food[i][j])
-                self.screen.set_at((j, i), food[i][j])
-        pygame.display.update()
-        return
+        image = pygame.transform.rotate(food, angle)
+        self.screen.blit(image, image.get_rect(center=tuple(core)))
 
     def __show_val_info(self, val_type, val_x, val_y):
         show_info = f'{val_type}:{self.happy_piggy.__getattribute__(self.val_chinglish_match.get(val_type))}'
@@ -115,6 +115,8 @@ class PyGaMeeRunny:
                         happy_start_time = time.time()
                         self.happy_piggy.eat_change_val(self.apple.food_val)
                         self.happy_piggy.sleep_change_val()
+                        self.food_pos_x += 10
+                        self.food_angle += 10
                         sounds.yohu.play()
                     elif event.key == ord('1'):
                         happy_start_time = time.time()
@@ -137,12 +139,13 @@ class PyGaMeeRunny:
             elif int(self.now - happy_start_time) < 5:
                 state = "happy"
                 message = "la~lala!"
-                self.__show_food('苹果')
             elif int(self.now - angry_start_time) < 5:
                 state = "angry"
                 message = "rua! rua rua!"
             else:
                 state = "normal"
+
+            self.__show_food(food_type="苹果", core=(self.food_pos_x, self.foos_pos_y), angle=self.food_angle)
 
             self.__show_piggy(state)
             self.__show_dialog(state, message)
